@@ -1,0 +1,22 @@
+# Python predmemorija
+__pycache__/
+*.pyc
+
+# Virtualno okruženje
+.venv/
+venv/
+
+# Postavke editora
+.vscode/
+
+# Datasetovi (slike koje su preteške za GitHub)
+UA-dataset/
+dataset_split/
+
+# Pomoćne skripte za izradu diplomskog
+others/
+
+# Razni prethodno istrenirani modeli
+models/
+*.h5
+*.weights.h5
