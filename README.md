@@ -23,7 +23,6 @@ This project implements a system for gesture-based control of the Windows operat
 
 ## 📸 Gesture demo 
 
-&nbsp;
 <div align="center">
 
 | Gesture | Function | Description | Visual |
@@ -33,16 +32,56 @@ This project implements a system for gesture-based control of the Windows operat
 | **Scale** | Volume Control | Distance between fingers adjusts volume | <img src="assets/Screenshot_14.png" width="200"> |
 
 </div>
-&nbsp;
 
 ## 📊 Performance evaluation
 
-To ensure high reliability, the system was evaluated on a controlled dataset. The dataset consists of a custom collection of images, including self-captured samples, images sourced from the web, and synthetically generated data. The confusion matrix below illustrates the gesture recognition accuracy.
+To ensure high reliability, the system was evaluated on a controlled dataset. The confusion matrix below illustrates the gesture recognition accuracy.
 
-<img src="assets/Screenshot_3.png" width="600"> 
+<div align="center">
+  <img src="assets/Screenshot_3.png" width="600">
+</div>
 
 ### Key Insights
 
 * **Overall Accuracy:** The model achieves high precision across all classes, with an average accuracy exceeding **95%**.
 * **Challenges:** The "Fist" and "Point" gestures exhibit slightly lower classification accuracy. This is primarily because these shapes frequently overlap with natural, neutral hand postures, causing the model to misclassify them as "Other." In practice, this results in occasional input lag or missed triggers during use, which is consistent with the lower confidence scores visible in the pictures above.
 * **Environmental Sensitivity:** The model shows sensitivity to low-light conditions, which negatively impacts the feature extraction process and increases the likelihood of misclassification.
+
+## 🚀 Installation and usage
+
+To set up the project on your local machine, follow these steps:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/bjukic00/Hand-Gesture-Control.git
+   cd gesture-controller
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+4. **Run the application:**
+   ```bash
+   python main.py
+
+> **Important Note:** Please ensure that you execute the application **from the project root directory**. Running the script from a subfolder will result in path resolution errors for assets and models. 
+> *For VS Code users, a `.vscode/settings.json` file is already included in the repository to automatically enforce running the project from the root.*
+
+### Dataset Information
+
+Please note that the raw dataset is **not included** in this repository due to its large size. The dataset consists of a custom collection of images, including self-captured samples, images sourced from the web, and synthetically generated data.
+
+* **Pre-trained Model:** Although the raw dataset is not provided, the repository includes a pre-trained model located in the `models/` directory. This allows you to run the application immediately after installing the dependencies without needing to train it from scratch.
+* **Retraining:** If you wish to retrain the model on your own data, ensure your dataset is organized in the following structure:
+
+
+```text
+dataset/
+├── Fist/
+├── None/
+├── Other/
+├── Point/
+└── Scale/
+```
+
+> **Note:** The program will automatically handle image resizing and dataset splitting upon execution. However, you can also use `resize_images.py` and `data_split.py` to perform these operations in advance, which will significantly speed up the training process.
+
+## 💡 Planned improvements
