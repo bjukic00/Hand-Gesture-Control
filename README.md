@@ -85,3 +85,9 @@ dataset/
 > **Note:** The program will automatically handle image resizing and dataset splitting upon execution. However, you can also use `resize_images.py` and `data_split.py` to perform these operations in advance, which will significantly speed up the training process.
 
 ## 💡 Planned improvements
+* [ ] **Dataset Expansion:** Incorporate a larger volume of images featuring diverse lighting conditions to improve model robustness.
+* [ ] **Background Complexity Module:** Develop a module to analyze and handle complex or cluttered backgrounds during inference.
+* [ ] **Dynamic Gesture Recognition:** Implement support for dynamic hand gestures, moving beyond static posture recognition.
+
+## Thesis documentation
+This project was developed as part of my thesis at FESB, University of Split. You can view or download the full document here: [Download Thesis PDF](assets/DiplomskiRad_BornaJukic.pdf)
