@@ -82,7 +82,7 @@ def set_volume_from_scalar(volume_interface, volume_percent):
 
 
 # --------------------------- Main ---------------------------
-def main(model_path='best_gesture_model.keras', class_indices=None, img_size=(64, 64)):
+def main(model_path='models/best_gesture_model.keras', class_indices=None, img_size=(64, 64)):
     print("🚀 Starting Hand Gesture Controller...")
     model = load_model(model_path, compile=False)
     print(f"✓ CNN loaded. input={model.input_shape} output={model.output_shape}")
@@ -350,6 +350,6 @@ def main(model_path='best_gesture_model.keras', class_indices=None, img_size=(64
 
 
 if __name__ == "__main__":
-    MODEL_PATH = 'hand_gesture_cnn_dp.keras'
+    MODEL_PATH = 'models/hand_gesture_cnn_dp.keras'
     CLASS_INDICES = {'Fist': 0, 'None': 1, 'Other': 2, 'Point': 3, 'Scale': 4}
     main(model_path=MODEL_PATH, class_indices=CLASS_INDICES, img_size=(64, 64))

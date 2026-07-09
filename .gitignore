@@ -17,6 +17,5 @@ dataset_split/
 others/
 
 # Razni prethodno istrenirani modeli
-models/
 *.h5
 *.weights.h5
