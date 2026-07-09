@@ -21,11 +21,16 @@ This project implements a system for gesture-based control of the Windows operat
 
 - **Scikit-learn:** Used for model evaluation, providing metrics such as confusion matrices, classification reports, and utilities for dataset splitting.
 
-## 📸 Demo geste
+## 📸 Gesture demo 
 
-<table>
-  <tr>
-    <td align="center"><img src="putanja/do/slike1.png" width="200"><br>Gesta 1</td>
-    <td align="center"><img src="putanja/do/slike2.png" width="200"><br>Gesta 2</td>
-    <td align="center"><img src="putanja/do/slike3.png" width="200"><br>Gesta 3</td>
-  </tr>
+&nbsp;
+| Gesture | Funkction | Description | Visual |
+| :---: | :--- | :--- | :--- |
+| **Point** | Mouse Movement | Moving the index finger controls the cursor | <img src="assets/Screenshot_10.png" width="200"> |
+| **Fist** | Mouse Click | Recognizing a clenched fist triggers a click | <img src="assets/Screenshot_9.png" width="200"> |
+| **Scale** | Volume Control | Distance between fingers adjusts volume | <img src="assets/Screenshot_14.png" width="200"> |
+
+## 📊 Performance evaluation
+
+To ensure high reliability, the system was evaluated on a controlled dataset. The dataset consists of a custom collection of images, including self-captured samples, images sourced from the web, and synthetically generated data. The confusion matrix below illustrates the gesture recognition accuracy.
+
