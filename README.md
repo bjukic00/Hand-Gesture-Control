@@ -24,13 +24,25 @@ This project implements a system for gesture-based control of the Windows operat
 ## 📸 Gesture demo 
 
 &nbsp;
-| Gesture | Funkction | Description | Visual |
-| :---: | :--- | :--- | :--- |
+<div align="center">
+
+| Gesture | Function | Description | Visual |
+| :---: | :---: | :---: | :---: |
 | **Point** | Mouse Movement | Moving the index finger controls the cursor | <img src="assets/Screenshot_10.png" width="200"> |
 | **Fist** | Mouse Click | Recognizing a clenched fist triggers a click | <img src="assets/Screenshot_9.png" width="200"> |
 | **Scale** | Volume Control | Distance between fingers adjusts volume | <img src="assets/Screenshot_14.png" width="200"> |
+
+</div>
+&nbsp;
 
 ## 📊 Performance evaluation
 
 To ensure high reliability, the system was evaluated on a controlled dataset. The dataset consists of a custom collection of images, including self-captured samples, images sourced from the web, and synthetically generated data. The confusion matrix below illustrates the gesture recognition accuracy.
 
+<img src="assets/Screenshot_3.png" width="600"> 
+
+### Key Insights
+
+* **Overall Accuracy:** The model achieves high precision across all classes, with an average accuracy exceeding **95%**.
+* **Challenges:** The "Fist" and "Point" gestures exhibit slightly lower classification accuracy. This is primarily because these shapes frequently overlap with natural, neutral hand postures, causing the model to misclassify them as "Other." In practice, this results in occasional input lag or missed triggers during use, which is consistent with the lower confidence scores visible in the pictures above.
+* **Environmental Sensitivity:** The model shows sensitivity to low-light conditions, which negatively impacts the feature extraction process and increases the likelihood of misclassification.
