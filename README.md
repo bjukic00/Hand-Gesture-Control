@@ -19,7 +19,7 @@ This project implements a system for gesture-based control of the Windows operat
 
 - **Matplotlib / Pyplot:** Employed for visualizing training results, including loss/accuracy plots and evaluation charts.
 
-- **Scikit-learn:** Used for model evaluation, providing metrics such as confusion matrices, classification reports, and utilities for dataset splitting.
+- **Scikit-learn:** Used for model evaluation, providing metrics such as confusion matrices, classification reports and utilities for dataset splitting.
 
 ## 📸 Gesture demo 
 
