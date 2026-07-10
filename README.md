@@ -23,16 +23,24 @@ This project implements a system for gesture-based control of the Windows operat
 
 ## 📸 Gesture demo 
 
+The system processes a continuous video stream in real-time, integrating computer vision with a deep learning classifier:
+
+1. **Preprocessing:** The application detects the hand using MediaPipe, extracts the Region of Interest (ROI), and performs essential format conversion. This includes converting the color format from BGR (OpenCV default) to RGB, followed by normalization to a (64x64) format suitable for the model.
+2. **Classification:** The processed image is fed into the trained CNN model, which outputs probability scores for predefined gestures.
+3. **Control Logic:** A state-machine approach ensures robust and stable interaction:
+
 <div align="center">
 
 | Gesture | Function | Description | Visual |
 | :---: | :---: | :---: | :---: |
-| **Point** | Mouse Movement | Moving the index finger controls the cursor | <img src="assets/Screenshot_10.png" width="200"> |
+| **Point** | Mouse Movement | Triggers cursor movement by tracking the palm center and enables "Fist" gesture detection as an edge-triggered click. | <img src="assets/Screenshot_10.png" width="200"> |
 | **Fist** | Mouse Click | Recognizing a clenched fist triggers a click | <img src="assets/Screenshot_9.png" width="200"> |
-| **Scale** | Volume Control | Distance between fingers adjusts volume | <img src="assets/Screenshot_14.png" width="200"> |
+| **Scale** | Volume Control | Activates volume control by dynamically mapping the Euclidean distance between thumb and index finger tips. | <img src="assets/Screenshot_14.png" width="200"> |
 
 </div>
 
+- **Stability:** The logic implements confidence thresholds and dwell timers to prevent accidental triggers or jitter, ensuring that actions like the "Fist" click are only executable when the system is in the "Point" state.
+  
 ## 📊 Performance evaluation
 
 To ensure high reliability, the system was evaluated on a controlled dataset. The confusion matrix below illustrates the gesture recognition accuracy.
