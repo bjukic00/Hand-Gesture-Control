@@ -1,7 +1,7 @@
 # Hand Gesture Control using Computer Vision
 
 This project implements a system for gesture-based control of the Windows operating system using computer vision. Users can control system volume and manipulate the mouse cursor using simple hand gestures.
-## 🛠 Technologies
+## 🛠️  Technologies
 
 - **Python:** The primary programming language used for the development of the entire system.
 
