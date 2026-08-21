@@ -82,7 +82,7 @@ def set_volume_from_scalar(volume_interface, volume_percent):
 
 
 # --------------------------- Main ---------------------------
-def main(model_path='best_gesture_model.keras', class_indices=None, img_size=(64, 64)):
+def main(model_path='models/best_gesture_model.keras', class_indices=None, img_size=(64, 64)):
     print("🚀 Starting Hand Gesture Controller...")
     model = load_model(model_path, compile=False)
     print(f"✓ CNN loaded. input={model.input_shape} output={model.output_shape}")
@@ -148,9 +148,11 @@ def main(model_path='best_gesture_model.keras', class_indices=None, img_size=(64
     RANGE_SHRINK = 0.8
     EDGE_SNAP = 3.0
 
-    # BBox smoothing
+    # BBox smoothing and reset
     bbox_prev = None
     ALPHA_BBOX = 0.40
+    no_hand_count = 0
+    NO_HAND_RESET_N = 8  # frames to reset bbox after losing hand
 
     # Palm center landmarks - for cursor movement
     PALM_IDXS = [
@@ -187,6 +189,13 @@ def main(model_path='best_gesture_model.keras', class_indices=None, img_size=(64
                     bbox_prev = [ALPHA_BBOX*bbox_prev[i] + (1-ALPHA_BBOX)*bbox_now[i] for i in range(4)] 
                 else:
                     bbox_prev = bbox_now
+            else:
+                no_hand_count += 1
+                if no_hand_count >= NO_HAND_RESET_N:
+                    bbox_prev = None
+                    active_gesture = 'None'
+                    fist_high = False
+                    dwell_count = 0; exit_count = 0
 
             if bbox_prev is None:
                 cv2.putText(frame, "Detecting hand...", (10, 28),
@@ -350,6 +359,6 @@ def main(model_path='best_gesture_model.keras', class_indices=None, img_size=(64
 
 
 if __name__ == "__main__":
-    MODEL_PATH = 'hand_gesture_cnn_dp.keras'
+    MODEL_PATH = 'models/hand_gesture_cnn_dp.keras'
     CLASS_INDICES = {'Fist': 0, 'None': 1, 'Other': 2, 'Point': 3, 'Scale': 4}
     main(model_path=MODEL_PATH, class_indices=CLASS_INDICES, img_size=(64, 64))

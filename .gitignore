@@ -6,9 +6,6 @@ __pycache__/
 .venv/
 venv/
 
-# Postavke editora
-.vscode/
-
 # Datasetovi (slike koje su preteške za GitHub)
 UA-dataset/
 dataset_split/
