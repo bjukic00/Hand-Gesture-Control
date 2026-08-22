@@ -35,8 +35,8 @@ def crop_letterbox_bgr(frame_bgr, bbox_norm, out_size=(64, 64)):
     x1, y1, x2, y2 = bbox_norm
     X1, Y1 = int(x1*W), int(y1*H)
     X2, Y2 = int(x2*W), int(y2*H)
-    X1 = max(0, min(W-1, X1)); X2 = max(0, min(W,   X2))
-    Y1 = max(0, min(H-1, Y1)); Y2 = max(0, min(H,   Y2))
+    X1 = max(0, min(W-1, X1)); X2 = max(0, min(W, X2))
+    Y1 = max(0, min(H-1, Y1)); Y2 = max(0, min(H, Y2))
     if X2 <= X1 or Y2 <= Y1: return None
     roi = frame_bgr[Y1:Y2, X1:X2]
     h, w = roi.shape[:2]; th, tw = out_size
