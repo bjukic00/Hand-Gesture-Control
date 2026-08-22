@@ -94,7 +94,6 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
         idx_to_class = {0: 'Fist', 1: 'None', 2: 'Other', 3: 'Point', 4: 'Scale'}
     class_to_idx = {v:k for k,v in idx_to_class.items()}
     IDX_FIST  = class_to_idx['Fist']
-    IDX_POINT = class_to_idx['Point']
 
     # MediaPipe (geometry only)
     mp_hands = mp.solutions.hands
@@ -119,10 +118,9 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
 
     # -------- Raw-prob thresholds (no EMA) --------
     ENTER_T = 0.6     # to activate a gesture
-    EXIT_T  = 0.35     # to leave active gesture (generic)
+    EXIT_T  = 0.3     # to leave active gesture (generic)
     DWELL_N = 2        # frames required to enter
     EXIT_N = 2         # frames required to exit
-    POINT_EXIT_T = 0.3  # quicker release for Point
     POINT_MIN_HOLD = 5
     point_hold_frames = 0
     exit_count = 0
@@ -230,16 +228,11 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
                         point_hold_frames = POINT_MIN_HOLD
             else:
                 # release logic
-                if active_gesture == 'Point':
-                    if p[IDX_POINT] < POINT_EXIT_T:
-                        exit_count += 1
-                    else:
-                        exit_count = 0
+             
+                if p[class_to_idx[active_gesture]] < EXIT_T:
+                    exit_count += 1
                 else:
-                    if p[class_to_idx[active_gesture]] < EXIT_T:
-                        exit_count += 1
-                    else:
-                        exit_count = 0
+                    exit_count = 0
 
                 if active_gesture == 'Point' and point_hold_frames > 0:
                     point_hold_frames -= 1
