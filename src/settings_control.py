@@ -228,13 +228,13 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
                         point_hold_frames = POINT_MIN_HOLD
             else:
                 # release logic
-             
+
                 if p[class_to_idx[active_gesture]] < EXIT_T:
                     exit_count += 1
                 else:
                     exit_count = 0
 
-                if active_gesture == 'Point' and point_hold_frames > 0:
+                if active_gesture == 'Point' and (point_hold_frames > 0 or p[IDX_FIST] >= FIST_RELEASE_T_POINT):
                     point_hold_frames -= 1
                     exit_count = 0
                 elif exit_count >= EXIT_N:
@@ -249,13 +249,10 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
                     click_cooldown = CLICK_COOLDOWN
                     cv2.putText(frame, 'CLICK!', (10, 86), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255), 3)
                     fist_high = True
-                elif fist_high and p[IDX_FIST] <= FIST_RELEASE_T_POINT:
-                    # re-arm after dropping below release threshold
-                    fist_high = False
-            else:
-                # if not pointing, just re-arm based on release
-                if p[IDX_FIST] <= FIST_RELEASE_T_POINT:
-                    fist_high = False
+
+            if fist_high and p[IDX_FIST] <= FIST_RELEASE_T_POINT:
+                # re-arm after dropping below release threshold
+                fist_high = False
 
             # HUD
             top2 = np.argsort(p)[-2:][::-1] # takes higest probabilites and reverses them from top to down
