@@ -135,7 +135,7 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
 
     # Cursor (palm center)
     screen_w, screen_h = pyautogui.size()
-    alpha_cursor = 0.9 # fraction of a gap you move toward new raw target
+    alpha_cursor = 0.7 # fraction of a gap you move toward new raw target
     deadzone = 2
     x_s, y_s = screen_w // 2, screen_h // 2
     prev_x, prev_y = x_s, y_s
@@ -270,9 +270,10 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
                 # Compute the palm center as the average of some landmark coordinates
                 cx = np.mean([lm_norm[i].x for i in PALM_IDXS])
                 cy = np.mean([lm_norm[i].y for i in PALM_IDXS])
-                # Convert normalized hand coordinates into pixel coordinates of the screen.
-                x_raw = int(cx * screen_w)
-                y_raw = int(cy * screen_h)
+                # Convert normalized hand coordinates into pixel coordinates of the screen
+                # Map the central 60% of the frame (0.2 to 0.8) to full screen dimensions
+                x_raw = int(np.interp(cx, [0.2, 0.8], [0, screen_w]))
+                y_raw = int(np.interp(cy, [0.2, 0.8], [0, screen_h]))
                 # Apply exponential smoothing with factor alpha_cursor
                 x_s = int((1 - alpha_cursor) * x_s + alpha_cursor * x_raw)
                 y_s = int((1 - alpha_cursor) * y_s + alpha_cursor * y_raw)
