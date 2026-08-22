@@ -271,9 +271,9 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
                 cx = np.mean([lm_norm[i].x for i in PALM_IDXS])
                 cy = np.mean([lm_norm[i].y for i in PALM_IDXS])
                 # Convert normalized hand coordinates into pixel coordinates of the screen
-                # Map the central 60% of the frame (0.2 to 0.8) to full screen dimensions
+                # Map the active zone of the frame to full screen dimensions
                 x_raw = int(np.interp(cx, [0.2, 0.8], [0, screen_w]))
-                y_raw = int(np.interp(cy, [0.2, 0.8], [0, screen_h]))
+                y_raw = int(np.interp(cy, [0.25, 0.75], [0, screen_h]))
                 # Apply exponential smoothing with factor alpha_cursor
                 x_s = int((1 - alpha_cursor) * x_s + alpha_cursor * x_raw)
                 y_s = int((1 - alpha_cursor) * y_s + alpha_cursor * y_raw)
