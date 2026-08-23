@@ -144,7 +144,7 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
     ALPHA_VOL = 0.20
     calib_min = calib_max = None
     RANGE_SHRINK = 0.8
-    EDGE_SNAP = 3.0
+    FAST_ALPHA_ZONE = 5.0  # within this % of 0/100, smoothing speeds up
 
     # BBox smoothing and reset
     bbox_prev = None
@@ -315,13 +315,10 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
                 norm_c = float(np.clip(norm, map_min, map_max))
                 target = np.interp(norm_c, [map_min, map_max], [0, 100])
 
-                # snap near edges + smoothing
-                if target >= 100 - EDGE_SNAP: target = 100.0
-                elif target <= EDGE_SNAP:     target = 0.0
 
                 if entered_scale: smoothed_vol = target
                 else:
-                    alpha = ALPHA_VOL if (EDGE_SNAP < target < 100-EDGE_SNAP) else min(0.75, ALPHA_VOL + 0.35)
+                    alpha = ALPHA_VOL if (FAST_ALPHA_ZONE < target < 100 - FAST_ALPHA_ZONE) else min(0.75, ALPHA_VOL + 0.35)
                     smoothed_vol = (1 - alpha) * smoothed_vol + alpha * target
                 
                 #vol_to_set = int(np.ceil(smoothed_vol)) 
