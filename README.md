@@ -98,4 +98,4 @@ dataset/
 * [ ] **Dynamic Gesture Recognition:** Implement support for dynamic hand gestures, moving beyond static posture recognition.
 
 ## Thesis documentation
-This project was developed as part of my thesis at FESB, University of Split. You can view or download the full document here: [Download Thesis PDF](assets/DiplomskiRad_BornaJukic.pdf)
+This project was developed as part of my thesis at FESB, University of Split. You can view or download the full document here: [Download Thesis PDF](https://urn.nsk.hr/urn:nbn:hr:179:982219)
