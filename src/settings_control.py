@@ -111,11 +111,8 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
 
     # Volume
     volume = setup_volume_control()
-    try:
-        smoothed_vol = float(volume.GetMasterVolumeLevelScalar()*100.0) if volume else 50.0
-    except:
-        smoothed_vol = 50.0
-
+    smoothed_vol = 50.0
+    
     # -------- Raw-prob thresholds (no EMA) --------
     ENTER_T = 0.6     # to activate a gesture
     EXIT_T  = 0.3     # to leave active gesture (generic)
