@@ -312,9 +312,7 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
                 mid  = 0.5 * (calib_min + calib_max)
                 half = 0.5 * (calib_max - calib_min) * RANGE_SHRINK
                 map_min, map_max = mid - half, mid + half
-                norm_c = float(np.clip(norm, map_min, map_max))
-                target = np.interp(norm_c, [map_min, map_max], [0, 100])
-
+                target = np.interp(norm, [map_min, map_max], [0, 100])
 
                 if entered_scale: smoothed_vol = target
                 else:
