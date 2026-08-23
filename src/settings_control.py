@@ -300,10 +300,10 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
                     calib_min, calib_max = norm * 0.6, norm * 1.4
                 else:
                     # slowly update the calibration range based on the current normalized pinch distance
-                    # for the extreme cases probably caused by a glitch, we use bigger weights to avoid sudden jumps
-                    # min(EMA smoothening, extreme cases/glitch)  
-                    calib_min = min(calib_min *  0.98 + norm * 0.02, 0.7 * calib_min + 0.3 * norm)
-                    calib_max = max(calib_max *  0.98 + norm * 0.02, 0.7 * calib_max + 0.3 * norm)
+                    # for the extreme cases probably caused by a glitch, we use weights to avoid sudden jumps
+                    # old version ---> min(EMA smoothening, norm) 
+                    calib_min = min(calib_min *  0.98 + norm * 0.02, calib_min * 0.7 + norm * 0.3)
+                    calib_max = max(calib_max *  0.98 + norm * 0.02, calib_max * 0.7 + norm * 0.3)
                     if calib_max - calib_min < 0.10:
                         calib_min -= 0.05; calib_max += 0.05
 
