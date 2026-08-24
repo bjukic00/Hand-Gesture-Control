@@ -143,7 +143,7 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
     RANGE_SHRINK = 0.9
     FAST_ALPHA_ZONE = 3.0  # within this % of 0/100, smoothing speeds up
     prev_norm = None
-    CALIB_FREEZE_NORM_JUMP = 0.15  # skip calibration update if norm jumps more than this between frames
+    CALIB_FREEZE_NORM_JUMP = 0.10  # skip calibration update if norm jumps more than this between frames
 
     # BBox smoothing and reset
     bbox_prev = None
