@@ -138,10 +138,10 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
     prev_x, prev_y = x_s, y_s
 
     # Volume calibration + mapping (kept)
-    ALPHA_VOL = 0.20
+    ALPHA_VOL = 0.08
     calib_min = calib_max = None
-    RANGE_SHRINK = 0.8
-    FAST_ALPHA_ZONE = 5.0  # within this % of 0/100, smoothing speeds up
+    RANGE_SHRINK = 0.9
+    FAST_ALPHA_ZONE = 3.0  # within this % of 0/100, smoothing speeds up
 
     # BBox smoothing and reset
     bbox_prev = None
@@ -269,8 +269,8 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
                 cy = np.mean([lm_norm[i].y for i in PALM_IDXS])
                 # Convert normalized hand coordinates into pixel coordinates of the screen
                 # Map the active zone of the frame to full screen dimensions
-                x_raw = int(np.interp(cx, [0.2, 0.8], [0, screen_w]))
-                y_raw = int(np.interp(cy, [0.25, 0.75], [0, screen_h]))
+                x_raw = int(np.interp(cx, [0.25, 0.75], [0, screen_w]))
+                y_raw = int(np.interp(cy, [0.3, 0.7], [0, screen_h]))
                 # Apply exponential smoothing with factor alpha_cursor
                 x_s = int((1 - alpha_cursor) * x_s + alpha_cursor * x_raw)
                 y_s = int((1 - alpha_cursor) * y_s + alpha_cursor * y_raw)
@@ -299,8 +299,8 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
                     # slowly update the calibration range based on the current normalized pinch distance
                     # for the extreme cases probably caused by a glitch, we use weights to avoid sudden jumps
                     # old version ---> min(EMA smoothening, norm) 
-                    calib_min = min(calib_min *  0.98 + norm * 0.02, calib_min * 0.7 + norm * 0.3)
-                    calib_max = max(calib_max *  0.98 + norm * 0.02, calib_max * 0.7 + norm * 0.3)
+                    calib_min = min(calib_min *  0.992 + norm * 0.008, calib_min * 0.85 + norm * 0.15)
+                    calib_max = max(calib_max *  0.992 + norm * 0.008, calib_max * 0.85 + norm * 0.15)
                     if calib_max - calib_min < 0.10:
                         calib_min -= 0.05; calib_max += 0.05
 
@@ -316,8 +316,7 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
                     alpha = ALPHA_VOL if (FAST_ALPHA_ZONE < target < 100 - FAST_ALPHA_ZONE) else min(0.75, ALPHA_VOL + 0.35)
                     smoothed_vol = (1 - alpha) * smoothed_vol + alpha * target
                 
-                #vol_to_set = int(np.ceil(smoothed_vol)) 
-                vol_to_set = int(round(smoothed_vol / 2.0) * 2)
+                vol_to_set = int(round(smoothed_vol))
                 set_volume_from_scalar(volume, vol_to_set)
 
             # cooldown
@@ -326,7 +325,7 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
             # Volume HUD
             if VOLUME_CONTROL_AVAILABLE and volume:
                 try:
-                    now_vol = int(volume.GetMasterVolumeLevelScalar() * 100)
+                    now_vol = int(round(volume.GetMasterVolumeLevelScalar() * 100))
                     cv2.putText(frame, f'Vol: {now_vol}%', (frame.shape[1] - 120, 28),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,0), 2)
                 except: pass
