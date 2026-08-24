@@ -142,6 +142,8 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
     calib_min = calib_max = None
     RANGE_SHRINK = 0.9
     FAST_ALPHA_ZONE = 3.0  # within this % of 0/100, smoothing speeds up
+    prev_norm = None
+    CALIB_FREEZE_NORM_JUMP = 0.15  # skip calibration update if norm jumps more than this between frames
 
     # BBox smoothing and reset
     bbox_prev = None
@@ -291,18 +293,26 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
                 hand_w_px = max(1.0, np.hypot((index_mcp.x - pinky_mcp.x) * W, (index_mcp.y - pinky_mcp.y) * H))
                 norm = pinch_px / hand_w_px
 
+                # skip calibration update if norm jumped too much frame-to-frame (likely gesture
+                # change or hand repositioning, not a deliberate gradual pinch)
+                norm_stable = True
+                if prev_norm is not None:
+                    norm_stable = abs(norm - prev_norm) <= CALIB_FREEZE_NORM_JUMP
+                prev_norm = norm
+
                 # dynamic calibration
                 # creates a starting range based on your hand’s first position.
-                if calib_min is None or calib_max is None:
-                    calib_min, calib_max = norm * 0.6, norm * 1.4
-                else:
-                    # slowly update the calibration range based on the current normalized pinch distance
-                    # for the extreme cases probably caused by a glitch, we use weights to avoid sudden jumps
-                    # old version ---> min(EMA smoothening, norm) 
-                    calib_min = min(calib_min *  0.992 + norm * 0.008, calib_min * 0.85 + norm * 0.15)
-                    calib_max = max(calib_max *  0.992 + norm * 0.008, calib_max * 0.85 + norm * 0.15)
-                    if calib_max - calib_min < 0.10:
-                        calib_min -= 0.05; calib_max += 0.05
+                if norm_stable:
+                    if calib_min is None or calib_max is None:
+                        calib_min, calib_max = norm * 0.6, norm * 1.4
+                    else:
+                        # slowly update the calibration range based on the current normalized pinch distance
+                        # for the extreme cases probably caused by a glitch, we use weights to avoid sudden jumps
+                        # old version ---> min(EMA smoothening, norm) 
+                        calib_min = min(calib_min *  0.992 + norm * 0.008, calib_min * 0.85 + norm * 0.15)
+                        calib_max = max(calib_max *  0.992 + norm * 0.008, calib_max * 0.85 + norm * 0.15)
+                        if calib_max - calib_min < 0.10:
+                            calib_min -= 0.05; calib_max += 0.05
 
                 # shrink mapping range so ends are easier
                 # find the current calibration window center & half-width
