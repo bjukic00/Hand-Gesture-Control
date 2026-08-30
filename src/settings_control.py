@@ -1,18 +1,34 @@
+import re
+import platform
+import subprocess
 import cv2
 import numpy as np
 import mediapipe as mp
 import pyautogui
 from tensorflow.keras.models import load_model
 
-# --------------------------- Windows volume (pycaw) ---------------------------
-try:
-    from ctypes import cast, POINTER
-    from comtypes import CLSCTX_ALL
-    from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
-    VOLUME_CONTROL_AVAILABLE = True
-except ImportError:
-    print("Warning: Volume control not available. Install pycaw for Windows volume control.")
-    VOLUME_CONTROL_AVAILABLE = False
+# -------------- Windows/Linux volume control ---------------------
+CURRENT_OS = platform.system()
+VOLUME_CONTROL_AVAILABLE = False
+
+if CURRENT_OS == "Windows":
+    try:
+        from ctypes import cast, POINTER
+        from comtypes import CLSCTX_ALL
+        from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+        VOLUME_CONTROL_AVAILABLE = True
+    except ImportError:
+        print("Warning: Volume control not available. Install pycaw for Windows volume control.")
+
+elif CURRENT_OS == "Linux":
+    try:
+        res = subprocess.run(["amixer"], capture_output=True, text=True)
+        if res.returncode == 0:
+            VOLUME_CONTROL_AVAILABLE = True
+        else:
+            print("Warning: 'amixer' command failed. Install alsa-utils for Linux volume control.")
+    except FileNotFoundError:
+        print("Warning: 'amixer' not found. Install alsa-utils (e.g., sudo apt install alsa-utils).")
 
 
 # --------------------------- Helpers ---------------------------
@@ -63,22 +79,65 @@ def preprocess_for_cnn_from_bgr(bgr_img, img_size=None):
     return x[None, ...]  
 
 def setup_volume_control():
-    if not VOLUME_CONTROL_AVAILABLE: return None
-    try:
-        devices = AudioUtilities.GetSpeakers()
-        interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-        return cast(interface, POINTER(IAudioEndpointVolume))
-    except Exception as e:
-        print(f"❌ Volume control initialization failed: {e}")
+    if not VOLUME_CONTROL_AVAILABLE: 
         return None
 
+    if CURRENT_OS == "Windows":
+        try:
+            devices = AudioUtilities.GetSpeakers()
+            interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+            return cast(interface, POINTER(IAudioEndpointVolume))
+        except Exception as e:
+            print(f"❌ Windows Volume control initialization failed: {e}")
+            return None
+    elif CURRENT_OS == "Linux":
+        # Linux doesnt need a special interface, we will use amixer command directly
+        return "linux_amixer"
+
 def set_volume_from_scalar(volume_interface, volume_percent):
-    if volume_interface is None: return
-    try:
-        scalar = float(np.clip(volume_percent, 0, 100)) / 100.0
-        volume_interface.SetMasterVolumeLevelScalar(scalar, None)
-    except Exception as e:
-        print(f"Error setting volume: {e}")
+    if volume_interface is None: 
+        return
+    
+    val_clamped = int(np.clip(volume_percent, 0, 100))
+
+    if CURRENT_OS == "Windows":
+        try:
+            scalar = float(val_clamped) / 100.0
+            volume_interface.SetMasterVolumeLevelScalar(scalar, None)
+        except Exception as e:
+            print(f"Error setting Windows volume: {e}")
+            
+    elif CURRENT_OS == "Linux":
+        try:
+            subprocess.run(
+                ["amixer", "-q", "sset", "Master", f"{val_clamped}%"],
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+        except Exception as e:
+            print(f"Error setting Linux volume: {e}")
+
+def get_current_volume(volume_interface):
+
+    if not VOLUME_CONTROL_AVAILABLE or volume_interface is None:
+        return None
+        
+    if CURRENT_OS == "Windows":
+        try:
+            return int(round(volume_interface.GetMasterVolumeLevelScalar() * 100))
+        except:
+            return None
+        
+    elif CURRENT_OS == "Linux":
+        try:
+            output = subprocess.check_output(["amixer", "sget", "Master"]).decode("utf-8")
+            match = re.search(r"\[(\d+)%\]", output)
+            if match:
+                return int(match.group(1))
+        except:
+            return None
+    return None
 
 
 # --------------------------- Main ---------------------------
@@ -335,9 +394,10 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
             # Volume HUD
             if VOLUME_CONTROL_AVAILABLE and volume:
                 try:
-                    now_vol = int(round(volume.GetMasterVolumeLevelScalar() * 100))
-                    cv2.putText(frame, f'Vol: {now_vol}%', (frame.shape[1] - 120, 28),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,0), 2)
+                    now_vol = get_current_volume(volume)
+                    if now_vol is not None:
+                        cv2.putText(frame, f'Vol: {now_vol}%', (frame.shape[1] - 120, 28),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,0), 2)
                 except: pass
 
             cv2.putText(frame, "Press 'q' to quit", (10, frame.shape[0]-18),
