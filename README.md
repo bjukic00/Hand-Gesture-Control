@@ -15,7 +15,9 @@ This project implements a system for gesture-based control of the Windows operat
 
 - **PyAutoGUI:** Used for programmatic control of the mouse cursor.
 
-- **Pycaw:** Used to interface with the Windows Core Audio APIs to control system volume.
+- **System Audio API (Pycaw / ALSA)**: 
+  * **Windows**: Interfaces via `Pycaw` to control Windows Core Audio APIs.
+  * **Linux**: Interfaces natively with `amixer` (`alsa-utils`) for system volume control.
 
 - **Matplotlib / Pyplot:** Employed for visualizing training results, including loss/accuracy plots and evaluation charts.
 
@@ -68,7 +70,7 @@ To set up the project on your local machine, follow these steps:
    pip install -r requirements.txt
 4. **Run the application:**
    ```bash
-   python main.py
+   python src/settings_control.py
 
 > **Important Note:** Please ensure that you execute the application **from the project root directory**. Running the script from a subfolder will result in path resolution errors for assets and models. 
 > *For VS Code users, a `.vscode/settings.json` file is already included in the repository to automatically enforce running the project from the root.*
@@ -91,6 +93,24 @@ dataset/
 ```
 
 > **Note:** The program will automatically handle image resizing and dataset splitting upon execution. However, you can also use `resize_images.py` and `data_split.py` to perform these operations in advance, which will significantly speed up the training process.
+
+## 🐧 Linux Setup & Requirements (Important)
+
+If you are running this project on **Linux** (e.g., Ubuntu), please review the following requirements before executing the script:
+
+### 1. Display Server & GUI Permissions (X11 / Xorg)
+PyAutoGUI requires direct display access to move the cursor and simulate inputs. Wayland restricts this for security reasons, so you must use **X11 / Xorg**.
+
+* **Switch to X11**: On the Ubuntu login screen, select your username, click the gear icon in the bottom-right corner, and choose **"Ubuntu on Xorg"** before signing in. *(Verification: `echo $XDG_SESSION_TYPE` should output `x11`)*.
+* **Enable GUI Display Access**: Before running the Python script, grant local applications permission to access the X server by executing this command in your terminal:
+  ```bash
+  xhost +local:
+  ```
+### 2. Audio Control Dependency (`alsa-utils`)
+Linux volume control relies on `amixer`. If it is not installed by default on your system, install it using:
+```bash
+sudo apt update && sudo apt install alsa-utils xdotool
+```
 
 ## 💡 Planned improvements
 * [ ] **Dataset Expansion:** Incorporate a larger volume of images featuring diverse lighting conditions to improve model robustness.
