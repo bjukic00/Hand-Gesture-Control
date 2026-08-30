@@ -119,14 +119,14 @@ def set_volume_from_scalar(volume_interface, volume_percent):
             print(f"Error setting Linux volume: {e}")
 
 def get_current_volume(volume_interface):
-
     if not VOLUME_CONTROL_AVAILABLE or volume_interface is None:
         return None
         
     if CURRENT_OS == "Windows":
         try:
             return int(round(volume_interface.GetMasterVolumeLevelScalar() * 100))
-        except:
+        except Exception as e:
+            print(f"Windows volume read error: {e}") 
             return None
         
     elif CURRENT_OS == "Linux":
@@ -135,10 +135,9 @@ def get_current_volume(volume_interface):
             match = re.search(r"\[(\d+)%\]", output)
             if match:
                 return int(match.group(1))
-        except:
+        except (subprocess.CalledProcessError, FileNotFoundError, Exception) as e:
+            print(f"Linux volume read error: {e}")
             return None
-    return None
-
 
 # --------------------------- Main ---------------------------
 def main(model_path='models/best_gesture_model.keras', class_indices=None, img_size=(64, 64)):
@@ -392,14 +391,12 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
             if click_cooldown > 0: click_cooldown -= 1
 
             # Volume HUD
-            if VOLUME_CONTROL_AVAILABLE and volume:
-                try:
-                    now_vol = get_current_volume(volume)
-                    if now_vol is not None:
-                        cv2.putText(frame, f'Vol: {now_vol}%', (frame.shape[1] - 120, 28),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,0), 2)
-                except: pass
-
+            if VOLUME_CONTROL_AVAILABLE and volume: 
+                now_vol = get_current_volume(volume)
+                if now_vol is not None:
+                    cv2.putText(frame, f'Vol: {now_vol}%', (frame.shape[1] - 120, 28),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255,255,0), 2)
+                
             cv2.putText(frame, "Press 'q' to quit", (10, frame.shape[0]-18),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1)
             cv2.imshow('Hand Gesture Control', frame)
