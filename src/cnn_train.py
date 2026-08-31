@@ -134,11 +134,13 @@ def train_gesture_cnn(data_dir='UA-dataset',
     test_eval_cb = TestEvalCallback(test_gen)
 
     # --- Callbacks: always evaluate the best epoch ---
-    ckpt_path = 'models/best_gesture_model.keras'
+    model_path = 'models/hand_gesture_model.keras'
+    os.makedirs('models', exist_ok = True)
+
     callbacks = [
         ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=3, min_lr=1e-5, verbose=1),
         EarlyStopping(monitor='val_accuracy', patience=6, restore_best_weights=True, verbose=1),
-        ModelCheckpoint(ckpt_path, monitor='val_accuracy', save_best_only=True, verbose=1),
+        ModelCheckpoint(model_path, monitor='val_accuracy', save_best_only=True, verbose=1),
         test_eval_cb, 
     ]
 
@@ -176,10 +178,11 @@ def train_gesture_cnn(data_dir='UA-dataset',
     plt.show()
 
     # ---------------- Save & final evaluate ----------------
-    model.save('models/hand_gesture_cnn.keras')
+    print("\nLoading the best evaluated model...")
+    model = tf.keras.models.load_model(model_path)
 
     print("\nEvaluating on test set...")
-    test_loss, test_acc = model.evaluate(test_gen, verbose=2)
+    _, test_acc = model.evaluate(test_gen, verbose=2)
     print(f"Test accuracy: {test_acc*100:.2f}%")
 
     # --------- Confusion Matrix & Report ---------

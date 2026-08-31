@@ -14,6 +14,12 @@ for cls in classes:
         img_path = os.path.join(folder, fname)
         img = cv2.imread(img_path)
         if img is not None:
+            h, w = img.shape[:2]
+    
+            # If image is already resized or on target size, skip it
+            if (w, h) == target_size:
+                continue
+
             img_resized = cv2.resize(img, target_size, interpolation=cv2.INTER_AREA)
             cv2.imwrite(img_path, img_resized)
         else:

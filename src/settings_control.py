@@ -411,6 +411,6 @@ def main(model_path='models/best_gesture_model.keras', class_indices=None, img_s
 
 
 if __name__ == "__main__":
-    MODEL_PATH = 'models/hand_gesture_cnn_dp.keras'
+    MODEL_PATH = 'models/best_gesture_model.keras'
     CLASS_INDICES = {'Fist': 0, 'None': 1, 'Other': 2, 'Point': 3, 'Scale': 4}
     main(model_path=MODEL_PATH, class_indices=CLASS_INDICES, img_size=(64, 64))
